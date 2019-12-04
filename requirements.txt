@@ -1,0 +1,8 @@
+flask
+flask-session
+flask-blueprint
+flask_restful
+flask_sqlalchemy
+flask_script
+flask_migrate
+mysqlclient
