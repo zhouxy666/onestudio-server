@@ -6,3 +6,4 @@ flask_sqlalchemy
 flask_script
 flask_migrate
 mysqlclient
+wtforms

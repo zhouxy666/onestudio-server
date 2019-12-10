@@ -1,9 +1,3 @@
-import os
-
-DEBUG = True
-SECRET_KEY = os.urandom(24)
-
-SERVER_NAME = '127.0.0.1:5000'
 # 配置MYSQL
 MYSQL_CONFIG = {
     'dialect': 'mysql',

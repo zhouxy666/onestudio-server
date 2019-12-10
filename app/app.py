@@ -6,11 +6,21 @@ def register_blueprints(app):
     app.register_blueprint(create_blueprint_v1(), url_prefix='/v1')
 
 
+def register_plugin(app):
+    from app.models.base import db
+    # 初始化db
+    db.init_app(app)
+    pass
+
+
 def create_app():
     app = Flask(__name__)
+    app.config.from_object('app.config.db')
     app.config.from_object('app.config.setting')
     app.config.from_object('app.config.secure')
 
     # 注册蓝图
     register_blueprints(app)
+    # 注册插件
+    register_plugin(app)
     return app
