@@ -1,4 +1,5 @@
 from app.libs.redprint import Redprint
+from flask_restful import Resource, Api
 
 api = Redprint('user')
 

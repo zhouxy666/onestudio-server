@@ -15,6 +15,8 @@ class User(db.Model):
     id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
     # 姓名
     name = db.Column(db.String(20), nullable=False)
+    # 昵称
+    nickname = db.Column(db.String(20), nullable=True)
     # 性别
     gender = db.Column(db.String(20), nullable=False)
     # 年龄
