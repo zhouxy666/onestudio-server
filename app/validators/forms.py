@@ -19,7 +19,7 @@ class ClientForm(BaseFrom):
             client = ClientTypeEnum(value.data)
         except ValueError as e:
             raise e
-        self.type = client.name
+        self.type = client
 
 
 class UserEmailForm(ClientForm):

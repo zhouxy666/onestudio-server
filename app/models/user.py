@@ -1,6 +1,7 @@
 from app.models.base import Base, db
 from sqlalchemy import Column, Integer, String, SmallInteger
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.libs.error_code import AuthFailed
 
 
 class User(Base):
@@ -9,6 +10,9 @@ class User(Base):
     nickname = Column(String(24), unique=True)
     auth = Column(SmallInteger, default=1)
     _password = Column('password', String(100))
+
+    def keys(self):
+        return ['email', 'nickname', 'auth', 'create_time']
 
     @property
     def password(self):
@@ -26,5 +30,15 @@ class User(Base):
             user.email = account
             user.password = secret
             db.session.add(user)
-            pass
-        pass
+
+    @staticmethod
+    def verify(email, password):
+        user = User.query.filter_by(email=email).first_or_404(msg='user not Found')
+        if not user.check_password(password):
+            raise AuthFailed()
+        return user
+
+    def check_password(self, password):
+        if not self._password:
+            return False
+        return check_password_hash(self._password, password)

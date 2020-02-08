@@ -1,10 +1,8 @@
-from flask import request
-
 from app.libs.error_code import Success
 from app.libs.redprint import Redprint
-from app.libs.enums import ClientTypeEnum
 from app.validators.forms import ClientForm, UserEmailForm
 from app.models.user import User
+from app.libs.enums import ClientTypeEnum
 
 api = Redprint('client')
 
@@ -13,7 +11,7 @@ api = Redprint('client')
 def create_client():
     form = ClientForm().validate_for_api()
     promise = {
-        'USER_EMAIL': __register_user_by_email
+        ClientTypeEnum.USER_EMAIL: __register_user_by_email
     }
     promise[form.type]()
     return Success()

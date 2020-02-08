@@ -1,19 +1,25 @@
 from flask import json, request
 from werkzeug.exceptions import HTTPException
+from app.models.base import db
+from datetime import date, datetime
+from werkzeug.http import http_date
 
 
 class ApiException(HTTPException):
     code = 500
     msg = 'make a mistake'
     error_code = 999
+    data = None
 
-    def __init__(self, code=None, msg=None, error_code=None):
+    def __init__(self, code=None, msg=None, error_code=None, data=None):
         if code:
             self.code = code
         if msg:
             self.msg = msg
         if error_code:
             self.error_code = error_code
+        if data:
+            self.data = data
         super(ApiException, self).__init__(msg, None)
 
     def get_body(self, environ=None):
@@ -22,11 +28,28 @@ class ApiException(HTTPException):
             msg=self.msg,
             request=request.method + ' ' + self.get_url_no_param()
         )
+        if self.data:
+            body['data'] = self.serialize_data(self.data)
+
         text = json.dumps(body)
         return text
 
     def get_headers(self, environ=None):
         return [('Content-Type', 'application/json')]
+
+    def serialize_data(self, o):
+        '''
+        如果返回的实例是模型类，那么通过dict来序列化
+        :param o:
+        :return:
+        '''
+        if isinstance(o, db.Model):
+            return dict(o)
+        if isinstance(o, date):
+            return http_date(o.timetuple())
+        if isinstance(o, datetime):
+            return http_date(o.utctimetuple())
+        return o
 
     @staticmethod
     def get_url_no_param():

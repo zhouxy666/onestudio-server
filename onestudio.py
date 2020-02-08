@@ -17,8 +17,8 @@ def framework_error(e):
         error_code = 1007
         return ApiException(msg=msg, code=code, error_code=error_code)
     else:
-        print(e)
-        return ApiException()
+        if not app.config['DEBUG']:
+            return ApiException()
 
 
 if __name__ == '__main__':

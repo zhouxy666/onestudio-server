@@ -1,19 +1,31 @@
 from app.libs.error import ApiException
 
 
-class ClientTypeError(ApiException):
-    code = 400
-    msg = 'client is invalid'
-    error_code = 1006
+class Success(ApiException):
+    code = 200
+    msg = 'success'
+    error_code = 200
 
 
+# 参数错误
 class ParameterException(ApiException):
     code = 400
     msg = 'invalid parameter'
     error_code = 1000
 
 
-class Success(ApiException):
-    code = 200
-    msg = 'success'
-    error_code = 200
+# 资源无法访问
+class NotFound(ApiException):
+    code = 400
+    msg = 'the resource is not found'
+    error_code = 1001
+
+
+# 鉴权失败
+class AuthFailed(ApiException):
+    '''
+    1003 password is error
+    '''
+    code = 401
+    msg = 'authorization failed'
+    error_code = 1005
