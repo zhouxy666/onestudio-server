@@ -67,6 +67,3 @@ class Base(db.Model):
 
     def delete(self):
         self.status = 0
-
-        # def get_or_404(self, uid):
-        #     pass

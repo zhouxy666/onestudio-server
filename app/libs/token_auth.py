@@ -19,7 +19,6 @@ def verify_token(token):
     try:
         data = s.loads(token)
     except BadSignature as e:
-        print(e)
         raise AuthFailed(msg='token is invalid')
     except SignatureExpired:
         raise AuthFailed(msg='token is expired')
