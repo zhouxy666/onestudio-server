@@ -1,9 +1,3 @@
-import os
-
-DEBUG = True
-SERVER_NAME = '127.0.0.1:5000'
-SECRET_KEY = os.urandom(24)
-
 # 配置MYSQL
 MYSQL_CONFIG = {
     'dialect': 'mysql',
@@ -12,7 +6,8 @@ MYSQL_CONFIG = {
     'password': '1234',
     'host': 'localhost',
     'port': '3306',
-    'database': 'onestudio_study'
+    # 'database': 'onestudio_study',
+    'database': 'onestudio_test'
 }
 
 SQLALCHEMY_DATABASE_URI = '{dialect}+{driver}://{username}:{password}@{host}:{port}/{database}?charset=utf8'.format(

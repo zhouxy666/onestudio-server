@@ -10,3 +10,5 @@ flask_migrate
 flask-cors
 mysqlclient
 wtforms
+pymysql
+Flask-HTTPAuth
