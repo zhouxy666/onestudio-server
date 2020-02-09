@@ -19,8 +19,17 @@ def get_token():
         form.account.data,
         form.secret.data
     )
+
+    # 获取用户的权限
+    auth_map = {
+        1: 'super_admin',
+        2: 'admin',
+        3: 'user',
+        4: 'wx_user'
+    }
+    user_auth = auth_map[user.auth]
     # 生成token
-    return generate_auth_token(uid=user.id, ac_type=form.type, auth=user.auth)
+    return generate_auth_token(uid=user.id, ac_type=form.type, auth=user_auth)
 
 
 def generate_auth_token(uid, ac_type, auth):

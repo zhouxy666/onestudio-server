@@ -1,5 +1,5 @@
 from app.models.base import Base, db
-from sqlalchemy import Column, Integer, String, SmallInteger
+from sqlalchemy import Column, Integer, String, SmallInteger, orm
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.libs.error_code import AuthFailed
 
@@ -7,12 +7,14 @@ from app.libs.error_code import AuthFailed
 class User(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String(24), unique=True, nullable=False)
-    nickname = Column(String(24), unique=True)
+    nickname = Column(String(24))
     auth = Column(SmallInteger, default=1)
     _password = Column('password', String(100))
 
-    def keys(self):
-        return ['email', 'nickname', 'auth', 'create_time']
+    @orm.reconstructor
+    def __init__(self):
+        self.fields = ['id', 'email', 'nickname', 'auth', 'create_time', 'status']
+        super(User, self).__init__()
 
     @property
     def password(self):
