@@ -14,5 +14,6 @@ class Redprint(object):
         for f, rule, options in self.mound:
             if url_prefix is None:
                 url_prefix = '/' + self.name
-            endpoint = options.pop('endpoint', f.__name__)
+            endpoint = self.name + '+' + \
+                       options.pop('endpoint', f.__name__)
             bp.add_url_rule(url_prefix + rule, endpoint, f, **options)

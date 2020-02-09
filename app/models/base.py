@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy, BaseQuery
 from sqlalchemy import Column, Integer, SmallInteger
 from contextlib import contextmanager
@@ -22,7 +21,7 @@ class Query(BaseQuery):
             kwargs['status'] = 1
         return super(Query, self).filter_by(**kwargs)
 
-    def get_or_404(self, ident, msg):
+    def get_or_404(self, ident, msg=None):
         from app.libs.error_code import NotFound
 
         rv = self.get(ident)
@@ -30,7 +29,7 @@ class Query(BaseQuery):
             raise NotFound(msg=msg)
         return rv
 
-    def first_or_404(self, msg):
+    def first_or_404(self, msg=None):
         from app.libs.error_code import NotFound
 
         rv = self.first()
@@ -67,3 +66,16 @@ class Base(db.Model):
 
     def delete(self):
         self.status = 0
+
+    def keys(self):
+        return self.fields
+
+    def hide(self, *keys):
+        for key in keys:
+            self.fields.remove(key)
+        return self
+
+    def append(self, *keys):
+        for key in keys:
+            self.fields.append(key)
+        return self

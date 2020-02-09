@@ -4,7 +4,18 @@ from app.libs.error import ApiException
 class Success(ApiException):
     code = 200
     msg = 'success'
-    error_code = 200
+    error_code = 0
+
+
+class DeleteSuccess(Success):
+    code = 202
+    error_code = 1
+
+
+class CreateSuccess(ApiException):
+    code = 201
+    msg = 'create_success'
+    error_code = 201
 
 
 # 参数错误
@@ -29,3 +40,7 @@ class AuthFailed(ApiException):
     code = 401
     msg = 'authorization failed'
     error_code = 1005
+
+
+class ServerError(ApiException):
+    code = 500
