@@ -2,9 +2,9 @@ from flask import request
 from app.libs.redprint import Redprint
 from app.models.base import db
 from app.models.members import Members
-from app.validators.members import MembersForm
+from app.validators.members import MembersForm, CreateMembersForm
 from app.libs.token_auth import auth
-from app.libs.error_code import Success, CreateSuccess, DeleteSuccess, NotFound
+from app.libs.error_code import Success, CreateSuccess, DeleteSuccess, UpdateSuccess
 
 api = Redprint('members')
 
@@ -39,7 +39,7 @@ def search_member():
 @auth.login_required
 def create_member():
     # 校验表单
-    form = MembersForm().validate_for_api()
+    form = CreateMembersForm().validate_for_api()
 
     # 通过后创建member
     Members.create_member(form.name.data,
@@ -50,6 +50,19 @@ def create_member():
                           form.mobile.data,
                           form.nickname.data)
     return CreateSuccess()
+
+
+@api.route('/<int:member_id>', methods=['put'])
+@auth.login_required
+def update_member(member_id):
+    member = Members.query.get_or_404(member_id)
+    # 校验表单
+    form = MembersForm().validate_for_api()
+    with db.auto_commit():
+        for key in form:
+            if key.data:
+                setattr(member, key.name, key.data)
+        return UpdateSuccess()
 
 
 @api.route('/<int:member_id>', methods=['delete'])

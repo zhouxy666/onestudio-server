@@ -30,6 +30,8 @@ class MembersForm(BaseFrom):
     # 昵称
     nickname = StringField()
 
+
+class CreateMembersForm(MembersForm):
     def validate_openid(self, value):
         if Members.query.filter_by(openid=value.data).first():
             raise ValidationError('账号已存在')
