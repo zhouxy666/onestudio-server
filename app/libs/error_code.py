@@ -4,12 +4,12 @@ from app.libs.error import ApiException
 class Success(ApiException):
     code = 200
     msg = 'success'
-    error_code = 0
+    error_code = 200
 
 
 class DeleteSuccess(Success):
     code = 202
-    error_code = 1
+    error_code = 202
 
 
 class CreateSuccess(ApiException):

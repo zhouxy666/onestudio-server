@@ -24,6 +24,7 @@ class ApiException(HTTPException):
 
     def get_body(self, environ=None):
         body = dict(
+            data=[],
             error_code=self.error_code,
             msg=self.msg,
             request=request.method + ' ' + self.get_url_no_param()
