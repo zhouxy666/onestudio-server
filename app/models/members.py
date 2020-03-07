@@ -14,7 +14,7 @@ class Members(Base):
     # 性别 1-男 2-女 3-??
     gender = Column(SmallInteger, nullable=False, default=1)
     # 头像url
-    avatarurl = Column(String(100), nullable=False)
+    avatarurl = Column(String(100), nullable=True)
     # 电话
     mobile = Column(String(24), nullable=True)
     # 昵称
@@ -26,7 +26,7 @@ class Members(Base):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age']
+        self.fields = ['id', 'status', 'openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age']
         super(Members, self).__init__()
 
     # # 出生年月
@@ -48,7 +48,7 @@ class Members(Base):
     # upgrade_date = Column(DateTime, default=datetime.datetime.utcnow)
 
     @staticmethod
-    def register_by_wx(name, openid, gender, avatarurl, age, mobile, nickname):
+    def create_member(name, openid, gender, avatarurl, age, mobile, nickname):
         with db.auto_commit():
             member = Members()
             member.name = name

@@ -7,6 +7,12 @@ from app.validators.base import BaseFrom
 
 
 class ClientForm(BaseFrom):
+    account = StringField(validators=[
+        DataRequired('账号不能为空'),
+    ])
+    secret = StringField(validators=[
+        DataRequired('密码不能为空'),
+    ])
     type = IntegerField(validators=[DataRequired()])
 
     def validate_type(self, value):
@@ -19,12 +25,10 @@ class ClientForm(BaseFrom):
 
 class UserEmailForm(ClientForm):
     account = StringField(validators=[
-        DataRequired('账号不能为空'),
         length(min=5, max=32),
         Email(message='invalidate email')
     ])
     secret = StringField(validators=[
-        DataRequired(),
         Regexp(r'^[a-zA-Z0-9_*&$#@]{6,22}$')
     ])
 
