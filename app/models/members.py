@@ -49,13 +49,16 @@ class Members(Base):
 
     @staticmethod
     def create_member(name, openid, gender, avatarurl, age, mobile, nickname):
-        with db.auto_commit():
-            member = Members()
-            member.name = name
-            member.openid = openid
-            member.gender = gender
-            member.avatarurl = avatarurl
-            member.age = age
-            member.mobile = mobile
-            member.nickname = nickname
-            db.session.add(member)
+        try:
+            with db.auto_commit():
+                member = Members()
+                member.name = name
+                member.openid = openid
+                member.gender = gender
+                member.avatarurl = avatarurl
+                member.age = age
+                member.mobile = mobile
+                member.nickname = nickname
+                db.session.add(member)
+        except Exception as e:
+            print(e)

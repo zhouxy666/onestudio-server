@@ -39,6 +39,8 @@ def search_member():
 @auth.login_required
 def create_member():
     # 校验表单
+    # form = CreateMembersForm().validate_for_api()
+    # form = MembersForm().validate_for_api()
     form = CreateMembersForm().validate_for_api()
 
     # 通过后创建member
