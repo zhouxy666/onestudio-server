@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from app.libs.redprint import Redprint
 from app.models.base import db
 from app.models.members import Members
@@ -12,9 +12,16 @@ api = Redprint('members')
 @api.route('', methods=['get'])
 @auth.login_required
 def get_members():
-    members = Members.query.all()
-    res_members = [dict(member) for member in members]
-    return Success(data=res_members)
+    pagination = dict(request.args)
+    page = int(pagination.get('page')) or 1
+    size = int(pagination.get('size')) or 10
+    members = Members.query.order_by(Members.create_time.desc())\
+        .limit(size).offset((page - 1) * size).all()
+    data = {
+        'members': [dict(member) for member in members],
+        'count': Members.query.count()
+    }
+    return Success(data=data)
 
 
 @api.route('/<int:member_id>', methods=['get'])
