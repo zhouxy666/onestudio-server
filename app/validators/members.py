@@ -2,6 +2,7 @@ from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, length, Email, Regexp, ValidationError
 from app.validators.base import BaseFrom
 from app.models.members import Members
+from app.libs.error_code import ParameterException
 
 
 class MembersForm(BaseFrom):
@@ -19,9 +20,6 @@ class MembersForm(BaseFrom):
         DataRequired(),
     ])
     # 头像
-    # validators=[
-    #         DataRequired(),
-    #     ]
     avatarurl = StringField()
     # 年龄
     age = StringField()
@@ -29,6 +27,10 @@ class MembersForm(BaseFrom):
     mobile = StringField()
     # 昵称
     nickname = StringField()
+
+    def validate_gender(self, value):
+        if value.data not in (1, 2,):
+            raise ParameterException(msg='gender is invalid')
 
 
 class CreateMembersForm(MembersForm):

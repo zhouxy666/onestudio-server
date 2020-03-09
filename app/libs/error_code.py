@@ -22,6 +22,7 @@ class UpdateSuccess(Success):
     code = 203
     error_code = 203
 
+
 # 参数错误
 class ParameterException(ApiException):
     code = 400
