@@ -47,5 +47,14 @@ class AuthFailed(ApiException):
     error_code = 1005
 
 
+class AuthScopeFailed(ApiException):
+    '''
+    1006 api is not allowed
+    '''
+    code = 401
+    msg = 'api is not allowed'
+    error_code = 1006
+
+
 class ServerError(ApiException):
     code = 500

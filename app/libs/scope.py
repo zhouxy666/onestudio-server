@@ -1,4 +1,4 @@
-from app.libs.error_code import ServerError
+from app.libs.error_code import ServerError, AuthScopeFailed, NotFound
 
 
 class AuthBase(object):
@@ -10,12 +10,26 @@ class AuthBase(object):
     def check_auth(self, **kwargs):
         modules = kwargs.get('modules')
         endpoints = kwargs.get('endpoints')
+        #
+        # if endpoints and self.endpoint in endpoints:
+        #     return True
+        #
+        # if modules and self.module in modules:
+        #     return True
 
-        if endpoints and self.endpoint in endpoints:
-            return True
+        if endpoints is not None:
+            if self.endpoint in endpoints:
+                return True
+            else:
+                # raise AuthScopeFailed(msg='endpoint %s is not allowed' % self.endpoint)
+                return False
 
-        if modules and self.module in modules:
-            return True
+        if modules is not None:
+            if self.module in modules:
+                return True
+            else:
+                # raise AuthScopeFailed(msg='module %s is not allowed' % self.module)
+                return False
 
         return False
 

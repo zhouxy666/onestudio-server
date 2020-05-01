@@ -15,11 +15,11 @@ def get_members():
     pagination = dict(request.args)
     page = int(pagination.get('page')) or 1
     size = int(pagination.get('size')) or 10
-    members = Members.query.order_by(Members.create_time.desc())\
+    members = Members.query.filter(Members.status == 1).order_by(Members.create_time.desc())\
         .limit(size).offset((page - 1) * size).all()
     data = {
         'members': [dict(member) for member in members],
-        'count': Members.query.count()
+        'count': Members.query.filter(Members.status == 1).count()
     }
     return Success(data=data)
 
@@ -78,6 +78,7 @@ def update_member(member_id):
 @auth.login_required
 def delete_member(member_id):
     with db.auto_commit():
+        print(member_id)
         member = Members.query.filter_by(id=member_id).first_or_404('member not exist')
         member.delete()
     return DeleteSuccess()

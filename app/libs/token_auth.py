@@ -29,5 +29,4 @@ def verify_token(token):
         raise AuthFailed(msg='token is invalid')
     except SignatureExpired:
         raise AuthFailed(msg='token is expired')
-
     return UserTuple(data['uid'], data['type'], data['auth'])
