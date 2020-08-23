@@ -7,14 +7,15 @@ class Members(Base):
     __tablename__ = 'members'
     # id
     id = Column(Integer, primary_key=True, autoincrement=True)
-    # 小程序的openid
-    openid = Column(String(28), nullable=False)
     # 姓名
     name = Column(String(24), nullable=False)
     # 性别 1-男 2-女 3-??
     gender = Column(SmallInteger, nullable=False, default=1)
     # 头像url
-    avatarurl = Column(String(100), nullable=True)
+    avatarurl = Column(String(100), nullable=True,
+                       default='//apic.douyucdn.cn/upload/avatar_v3/201909/533af0de15b14cb0996bc4b9645a73fa_middle.jpg')
+    # 小程序的openid
+    openid = Column(String(28), nullable=True)
     # 电话
     mobile = Column(String(24), nullable=True)
     # 昵称
@@ -26,7 +27,8 @@ class Members(Base):
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['id', 'status', 'openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age']
+        self.fields = ['id', 'openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age',
+                       'create_time']
         super(Members, self).__init__()
 
     # # 出生年月
@@ -48,17 +50,32 @@ class Members(Base):
     # upgrade_date = Column(DateTime, default=datetime.datetime.utcnow)
 
     @staticmethod
-    def create_member(name, openid, gender, avatarurl, age, mobile, nickname):
-        try:
-            with db.auto_commit():
-                member = Members()
-                member.name = name
-                member.openid = openid
-                member.gender = gender
-                member.avatarurl = avatarurl
-                member.age = age
-                member.mobile = mobile
-                member.nickname = nickname
-                db.session.add(member)
-        except Exception as e:
-            print(e)
+    def add_member(name, gender, age, mobile, nickname):
+        with db.auto_commit():
+            member = Members()
+            member.name = name
+            member.gender = gender
+            member.age = age
+            member.mobile = mobile
+            member.nickname = nickname
+            db.session.add(member)
+
+    @staticmethod
+    def update_member(uid, name, gender, age, mobile='', nickname=''):
+        with db.auto_commit():
+            member = Members.query.get_or_404(uid, msg='member not found')
+            member.name = name
+            member.gender = gender
+            member.age = age
+            member.mobile = mobile
+            member.nickname = nickname
+            # member.update({
+            #     'name': name,
+            #     'gender': gender,
+            #     'age': age,
+            #     'mobile': mobile,
+            #     'nickname': nickname
+            # })
+
+    def verify(self, openid):
+        pass

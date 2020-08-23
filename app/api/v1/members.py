@@ -1,27 +1,28 @@
 from flask import request, jsonify
 from app.libs.redprint import Redprint
+from app.libs.token_auth import auth
 from app.models.base import db
 from app.models.members import Members
-from app.validators.members import MembersForm, CreateMembersForm
-from app.libs.token_auth import auth
-from app.libs.error_code import Success, CreateSuccess, DeleteSuccess, UpdateSuccess
+from app.libs.error_code import Success, CreateSuccess, DeleteSuccess
+from app.validators.forms import MemberForm
+from flask import request
 
 api = Redprint('members')
 
 
 @api.route('', methods=['get'])
-@auth.login_required
 def get_members():
-    pagination = dict(request.args)
-    page = int(pagination.get('page')) or 1
-    size = int(pagination.get('size')) or 10
-    members = Members.query.order_by(Members.create_time.desc())\
-        .limit(size).offset((page - 1) * size).all()
-    data = {
-        'members': [dict(member) for member in members],
-        'count': Members.query.count()
-    }
-    return Success(data=data)
+    params = request.args.to_dict()
+    limit = int(params['limit'])
+    page = int(params.get('page'))
+    # count = len(Members.query.filter_by().all())
+    # members = Members.query.filter_by().order_by(Members.create_time.desc()).limit(limit).offset((page - 1) * limit)
+
+    paginate = Members.query.filter_by().order_by(Members.create_time.desc()).paginate(page, limit)
+    members = paginate.items
+    count = paginate.total
+    res_members = [dict(item) for item in members]
+    return Success(data=res_members, count=count)
 
 
 @api.route('/<int:member_id>', methods=['get'])
@@ -42,42 +43,35 @@ def search_member():
     return Success(data=res_members)
 
 
-@api.route('/create', methods=['post'])
+@api.route('', methods=['POST'])
 @auth.login_required
 def create_member():
-    # 校验表单
-    # form = CreateMembersForm().validate_for_api()
-    # form = MembersForm().validate_for_api()
-    form = CreateMembersForm().validate_for_api()
-
-    # 通过后创建member
-    Members.create_member(form.name.data,
-                          form.openid.data,
-                          form.gender.data,
-                          form.avatarurl.data,
-                          form.age.data,
-                          form.mobile.data,
-                          form.nickname.data)
+    form = MemberForm().validate_for_api()
+    Members.add_member(form.name.data,
+                       form.gender.data,
+                       form.age.data,
+                       form.mobile.data,
+                       form.nickname.data)
     return CreateSuccess()
 
 
-@api.route('/<int:member_id>', methods=['put'])
+@api.route('', methods=['PUT'])
 @auth.login_required
-def update_member(member_id):
-    member = Members.query.get_or_404(member_id)
-    # 校验表单
-    form = MembersForm().validate_for_api()
-    with db.auto_commit():
-        for key in form:
-            if key.data:
-                setattr(member, key.name, key.data)
-        return UpdateSuccess()
+def update_member():
+    form = MemberForm().validate_for_api()
+    Members.update_member(form.id.data,
+                          form.name.data,
+                          form.gender.data,
+                          form.age.data,
+                          form.mobile.data,
+                          form.nickname.data)
+    return Success()
 
 
-@api.route('/<int:member_id>', methods=['delete'])
+@api.route('/<int:uid>', methods=['delete'])
 @auth.login_required
-def delete_member(member_id):
+def delete_member(uid):
     with db.auto_commit():
-        member = Members.query.filter_by(id=member_id).first_or_404('member not exist')
+        member = Members.query.filter_by(id=uid).first_or_404(msg='没有找到该会员')
         member.delete()
     return DeleteSuccess()

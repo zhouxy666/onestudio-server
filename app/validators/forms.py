@@ -3,15 +3,15 @@ from wtforms.validators import DataRequired, length, Email, Regexp, ValidationEr
 from app.libs.enums import ClientTypeEnum
 from app.models.user import User
 from app.models.members import Members
-from app.validators.base import BaseFrom
+from app.validators.base import BaseForm
 
 
-class ClientForm(BaseFrom):
-    account = StringField(validators=[
-        DataRequired('账号不能为空'),
-    ])
-    secret = StringField(validators=[
-        DataRequired('密码不能为空'),
+class ClientForm(BaseForm):
+    username = StringField(validators=[DataRequired('账号不能为空'), length(
+        min=5, max=32
+    )])
+    password = StringField(validators=[
+        DataRequired()
     ])
     type = IntegerField(validators=[DataRequired()])
 
@@ -24,11 +24,13 @@ class ClientForm(BaseFrom):
 
 
 class UserEmailForm(ClientForm):
-    account = StringField(validators=[
+    username = StringField(validators=[
+        DataRequired('账号不能为空'),
         length(min=5, max=32),
         Email(message='invalidate email')
     ])
-    secret = StringField(validators=[
+    password = StringField(validators=[
+        DataRequired(),
         Regexp(r'^[a-zA-Z0-9_*&$#@]{6,22}$')
     ])
 
@@ -43,7 +45,7 @@ class UserEmailForm(ClientForm):
             raise ValidationError('账号已存在')
 
 
-class UserWxForm(BaseFrom):
+class UserWxForm(BaseForm):
     # 姓名
     name = StringField(validators=[
         DataRequired(),
@@ -70,3 +72,23 @@ class UserWxForm(BaseFrom):
     def validate_openid(self, value):
         if Members.query.filter_by(openid=value.data).first():
             raise ValidationError('账号已存在')
+
+
+class MemberForm(BaseForm):
+    id = StringField()
+    # 姓名
+    name = StringField(validators=[
+        DataRequired(),
+    ])
+    gender = IntegerField(validators=[
+        DataRequired(),
+    ])
+    mobile = StringField()
+    nickname = StringField()
+    age = StringField()
+
+    def validate_gender(self, value):
+        try:
+            [1, 2].index(value.data)
+        except ValueError as e:
+            raise e

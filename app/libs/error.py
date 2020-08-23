@@ -10,8 +10,9 @@ class ApiException(HTTPException):
     msg = 'make a mistake'
     error_code = 999
     data = None
+    count = None
 
-    def __init__(self, code=None, msg=None, error_code=None, data=None):
+    def __init__(self, code=None, msg=None, error_code=None, data=None, count=None):
         if code:
             self.code = code
         if msg:
@@ -20,6 +21,8 @@ class ApiException(HTTPException):
             self.error_code = error_code
         if data:
             self.data = data
+        if count:
+            self.count = count
         super(ApiException, self).__init__(msg, None)
 
     def get_body(self, environ=None):
@@ -31,7 +34,8 @@ class ApiException(HTTPException):
         )
         if self.data:
             body['data'] = self.serialize_data(self.data)
-
+        if self.count is not None:
+            body['count'] = self.count
         text = json.dumps(body)
         return text
 

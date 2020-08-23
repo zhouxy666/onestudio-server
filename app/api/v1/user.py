@@ -6,7 +6,12 @@ from app.models.base import db
 from app.libs.error_code import Success, DeleteSuccess, AuthFailed
 
 api = Redprint('user')
-
+auth_map = {
+    1: 'super_admin',
+    2: 'admin',
+    3: 'user',
+    4: 'wx_user'
+}
 '''
 超级管理员
 '''
@@ -46,6 +51,11 @@ def super_delete_user(uid):
 def get_user():
     uid = g.user.uid
     user = User.query.get_or_404(uid, msg='user not found')
+    # 返回用户权限
+    # user['roles'] = 'admin'
+    # user.set_attrs({
+    #     'roles': ['admin']
+    # })
     return Success(data=user)
 
 
