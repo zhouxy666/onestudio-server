@@ -9,27 +9,27 @@ class Success(ApiException):
 
 class DeleteSuccess(Success):
     code = 202
-    error_code = 1
+    error_code = 0
 
 
 class CreateSuccess(ApiException):
     code = 201
     msg = 'create_success'
-    error_code = 201
+    error_code = 0
 
 
 # 参数错误
 class ParameterException(ApiException):
     code = 400
     msg = 'invalid parameter'
-    error_code = 1000
+    error_code = 40000
 
 
 # 资源无法访问
 class NotFound(ApiException):
     code = 400
     msg = 'the resource is not found'
-    error_code = 1001
+    error_code = 40004
 
 
 # 鉴权失败
@@ -39,7 +39,7 @@ class AuthFailed(ApiException):
     '''
     code = 401
     msg = 'authorization failed'
-    error_code = 1005
+    error_code = 40001
 
 
 class ServerError(ApiException):

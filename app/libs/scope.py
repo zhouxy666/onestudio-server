@@ -31,11 +31,11 @@ class AuthScope(AuthBase):
         super(AuthScope, self).__init__(auth, endpoint)
 
     def super_admin(self):
-        modules = ['v1.user']
+        modules = ['v1.user', 'v1.members']
         return self.check_auth(modules=modules)
 
     def admin(self):
-        modules = ['v1.user']
+        modules = ['v1.user', 'v1.members']
         return self.check_auth(modules=modules)
 
     def user(self):

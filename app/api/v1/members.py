@@ -1,16 +1,59 @@
 from app.libs.redprint import Redprint
+from app.libs.token_auth import auth
+from app.models.base import db
 from app.models.members import Members
-from app.libs.error_code import Success
+from app.libs.error_code import Success, CreateSuccess, DeleteSuccess
+from app.validators.forms import MemberForm
+from flask import request
 
 api = Redprint('members')
 
 
-@api.route('')
+@api.route('', methods=['get'])
 def get_members():
-    members = Members.query.first()
-    return Success(data=members)
+    params = request.args.to_dict()
+    limit = int(params['limit'])
+    page = int(params.get('page'))
+    # count = len(Members.query.filter_by().all())
+    # members = Members.query.filter_by().order_by(Members.create_time.desc()).limit(limit).offset((page - 1) * limit)
+
+    paginate = Members.query.filter_by().order_by(Members.create_time.desc()).paginate(page, limit)
+    members = paginate.items
+    count = paginate.total
+    res_members = [dict(item) for item in members]
+    return Success(data=res_members, count=count)
 
 
-@api.route('/create')
+@api.route('', methods=['POST'])
+@auth.login_required
 def create_member():
-    return 'create'
+    form = MemberForm().validate_for_api()
+    Members.add_member(form.name.data,
+                       form.gender.data,
+                       form.age.data,
+                       form.mobile.data,
+                       form.nickname.data)
+    return CreateSuccess()
+
+
+@api.route('', methods=['PUT'])
+@auth.login_required
+def update_member():
+    form = MemberForm().validate_for_api()
+    Members.update_member(form.id.data,
+                          form.name.data,
+                          form.gender.data,
+                          form.age.data,
+                          form.mobile.data,
+                          form.nickname.data)
+    return Success()
+
+
+@api.route('/<int:uid>', methods=['delete'])
+@auth.login_required
+def delete_member(uid):
+    with db.auto_commit():
+        member = Members.query.filter_by(id=uid).first_or_404(msg='没有找到该会员')
+        print(member)
+        member.delete()
+    return DeleteSuccess()
