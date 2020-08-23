@@ -24,6 +24,17 @@ def get_members():
     return Success(data=res_members, count=count)
 
 
+@api.route('/search', methods=['get'])
+@auth.login_required
+def search_member():
+    name = request.args.get('name') or ''
+    members = Members.query.filter(Members.name.like('%' + name + '%'))
+    res_members = [dict(member) for member in members]
+    if len(res_members) == 0:
+        return Success(data=res_members, msg='member is not found')
+    return Success(data=res_members)
+
+
 @api.route('', methods=['POST'])
 @auth.login_required
 def create_member():
@@ -54,6 +65,5 @@ def update_member():
 def delete_member(uid):
     with db.auto_commit():
         member = Members.query.filter_by(id=uid).first_or_404(msg='没有找到该会员')
-        print(member)
         member.delete()
     return DeleteSuccess()
