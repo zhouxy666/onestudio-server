@@ -28,10 +28,10 @@ def __register_user_by_email():
 
 def __register_by_wx():
     form = UserWxForm().validate_for_api()
-    Members.register_by_wx(form.name.data,
-                           form.openid.data,
-                           form.gender.data,
-                           form.avatarurl.data,
-                           form.age.data,
-                           form.mobile.data,
-                           form.nickname.data)
+    Members.create_member(form.name.data,
+                          form.openid.data,
+                          form.gender.data,
+                          form.avatarurl.data,
+                          form.age.data,
+                          form.mobile.data,
+                          form.nickname.data)

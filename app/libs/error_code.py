@@ -12,10 +12,15 @@ class DeleteSuccess(Success):
     error_code = 0
 
 
-class CreateSuccess(ApiException):
+class CreateSuccess(Success):
     code = 201
     msg = 'create_success'
     error_code = 0
+
+
+class UpdateSuccess(Success):
+    code = 203
+    error_code = 203
 
 
 # 参数错误

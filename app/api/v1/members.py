@@ -1,3 +1,4 @@
+from flask import request, jsonify
 from app.libs.redprint import Redprint
 from app.libs.token_auth import auth
 from app.models.base import db
@@ -22,6 +23,13 @@ def get_members():
     count = paginate.total
     res_members = [dict(item) for item in members]
     return Success(data=res_members, count=count)
+
+
+@api.route('/<int:member_id>', methods=['get'])
+@auth.login_required
+def get_member(member_id):
+    member = Members.query.get_or_404(member_id, msg='member not found')
+    return Success(data=member)
 
 
 @api.route('/search', methods=['get'])
