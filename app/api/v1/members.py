@@ -13,14 +13,19 @@ api = Redprint('members')
 @api.route('', methods=['get'])
 def get_members():
     params = request.args.to_dict()
-    limit = int(params['limit'])
-    page = int(params.get('page'))
+    limit = params.get('limit')
+    page = params.get('page')
+    members = []
+    count = 0
     # count = len(Members.query.filter_by().all())
     # members = Members.query.filter_by().order_by(Members.create_time.desc()).limit(limit).offset((page - 1) * limit)
-
-    paginate = Members.query.filter_by().order_by(Members.create_time.desc()).paginate(page, limit)
-    members = paginate.items
-    count = paginate.total
+    if limit is None or page is None:
+        members = Members.query.filter_by().order_by(Members.create_time.desc()).all()
+        count = Members.query.count()
+    else:
+        paginate = Members.query.filter_by().order_by(Members.create_time.desc()).paginate(int(page), int(limit))
+        members = paginate.items
+        count = paginate.total
     res_members = [dict(item) for item in members]
     return Success(data=res_members, count=count)
 

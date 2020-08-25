@@ -1,6 +1,7 @@
 from app.models.base import Base, db
 from sqlalchemy import Column, SmallInteger, Integer, String, Date
 from sqlalchemy import orm
+from .members_grade import MembersGrade
 
 
 class Members(Base):
@@ -24,6 +25,9 @@ class Members(Base):
     auth = Column(SmallInteger, default=4)
     # 年龄
     age = Column(String(24), nullable=True, default=1)
+
+    # 定义多对多的关系
+    grades = db.relationship("Grade", secondary=MembersGrade, backref="members")
 
     @orm.reconstructor
     def __init__(self):
