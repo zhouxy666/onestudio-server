@@ -1,11 +1,11 @@
 from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, length, Email, Regexp, ValidationError
-from app.validators.base import BaseFrom
+from app.validators.base import BaseForm
 from app.models.members import Members
 from app.libs.error_code import ParameterException
 
 
-class MembersForm(BaseFrom):
+class MembersForm(BaseForm):
     # 姓名
     name = StringField(validators=[
         DataRequired(),

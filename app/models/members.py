@@ -1,6 +1,12 @@
 from app.models.base import Base, db
 from sqlalchemy import Column, SmallInteger, Integer, String, Date
 from sqlalchemy import orm
+from app.models.grade import Grade
+
+members_grade = db.Table('members_grade',
+                         db.Column('id', db.Integer, primary_key=True, autoincrement=True),
+                         db.Column('member_id', db.Integer, db.ForeignKey('members.id')),
+                         db.Column('grade_id', db.Integer, db.ForeignKey('grade.id')))
 
 
 class Members(Base):
@@ -25,10 +31,13 @@ class Members(Base):
     # 年龄
     age = Column(String(24), nullable=True, default=1)
 
+    # 定义多对多的关系
+    grades = db.relationship("Grade", secondary=members_grade, backref=db.backref('members'))
+
     @orm.reconstructor
     def __init__(self):
         self.fields = ['id', 'openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age',
-                       'create_time']
+                       'create_time', 'grades']
         super(Members, self).__init__()
 
     # # 出生年月
@@ -50,7 +59,7 @@ class Members(Base):
     # upgrade_date = Column(DateTime, default=datetime.datetime.utcnow)
 
     @staticmethod
-    def add_member(name, gender, age, mobile, nickname):
+    def add_member(name, gender, age, mobile, nickname, grades=[]):
         with db.auto_commit():
             member = Members()
             member.name = name
@@ -58,10 +67,30 @@ class Members(Base):
             member.age = age
             member.mobile = mobile
             member.nickname = nickname
+            member.grades = grades
             db.session.add(member)
 
+    '''
+    分班
+    '''
+
     @staticmethod
-    def update_member(uid, name, gender, age, mobile='', nickname=''):
+    def divide_grades(member_id, grade_ids=''):
+        grades = []
+        if grade_ids is not None and grade_ids != '':
+            grade_id_list = grade_ids.split(',')
+            # 检查需要绑定的grade是否存在
+            for grade_id in grade_id_list:
+                grade = Grade.query.get_or_404(ident=grade_id, msg='{grade_id}不存在'.format(grade_id=grade_id))
+                grades.append(grade)
+        with db.auto_commit():
+            member = Members.query.get_or_404(member_id)
+            member.grades = grades
+            db.session.add(member)
+            return member
+
+    @staticmethod
+    def update_member(uid, name, gender, age, mobile='', nickname='', grades=[]):
         with db.auto_commit():
             member = Members.query.get_or_404(uid, msg='member not found')
             member.name = name
@@ -69,13 +98,17 @@ class Members(Base):
             member.age = age
             member.mobile = mobile
             member.nickname = nickname
-            # member.update({
-            #     'name': name,
-            #     'gender': gender,
-            #     'age': age,
-            #     'mobile': mobile,
-            #     'nickname': nickname
-            # })
+            member.grades = grades
 
     def verify(self, openid):
         pass
+
+    def to_dict(self):
+        result_dict = {}
+        for column_name in self.fields:
+            value = getattr(self, column_name, None)
+            if column_name == 'grades':
+                result_dict['grades'] = [v.to_dict() for v in value]
+            else:
+                result_dict[column_name] = value
+        return result_dict

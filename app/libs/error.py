@@ -1,7 +1,7 @@
 from flask import json, request
 from werkzeug.exceptions import HTTPException
 from app.models.base import db
-from datetime import date, datetime
+from datetime import date, datetime, time
 from werkzeug.http import http_date
 
 
@@ -53,6 +53,8 @@ class ApiException(HTTPException):
         if isinstance(o, date):
             return http_date(o.timetuple())
         if isinstance(o, datetime):
+            return http_date(o.utctimetuple())
+        if isinstance(o, time):
             return http_date(o.utctimetuple())
         return o
 
