@@ -25,7 +25,7 @@ class Query(BaseQuery):
         from app.libs.error_code import NotFound
 
         rv = self.get(ident)
-        if not rv:
+        if not rv or rv.status != 1:
             raise NotFound(msg=msg)
         return rv
 
@@ -33,7 +33,7 @@ class Query(BaseQuery):
         from app.libs.error_code import NotFound
 
         rv = self.first()
-        if not rv:
+        if not rv or rv.status != 1:
             raise NotFound(msg=msg)
         return rv
 
@@ -79,3 +79,13 @@ class Base(db.Model):
         for key in keys:
             self.fields.append(key)
         return self
+
+    # def to_dict(self):
+    #     return {c.name: getattr(self, c.name, None)
+    #             for c in self.__table__.columns}
+
+    def to_dict(self):
+        return {
+            column_name: getattr(self, column_name, None)
+            for column_name in self.fields
+        }
