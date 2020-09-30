@@ -135,7 +135,7 @@ class GradeForm(BaseForm):
     def validate_grade_name(self, value):
         grade = Grade.query.filter_by(grade_name=value.data).first()
         if grade is not None:
-            raise ('班级名已存在')
+            raise ValidationError('班级名已存在')
 
     def validate_member_ids(self, value):
         if value.data is None or value.data == '':
