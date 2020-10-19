@@ -14,3 +14,18 @@ class BaseForm(Form):
         if not valid:
             raise ParameterException(msg=self.errors)
         return self
+
+    '''
+    '1,2,3,4' ==> ['1','2','3','4']
+    '''
+
+    @staticmethod
+    def validate_str_ids(model, ids):
+        if ids in [None, '']:
+            return []
+        split_ids = ids.split(',')
+        instance_list = []
+        for ins_id in split_ids:
+            model_ins = model.query.get_or_404(ident=ins_id, msg='{}不存在'.format(ins_id))
+            instance_list.append(model_ins)
+        return instance_list
