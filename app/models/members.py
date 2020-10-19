@@ -37,7 +37,7 @@ class Members(Base):
     @orm.reconstructor
     def __init__(self):
         self.fields = ['id', 'openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age',
-                       'create_time', 'grades']
+                       'create_time']
         super(Members, self).__init__()
 
     # # 出生年月
@@ -75,24 +75,30 @@ class Members(Base):
     '''
 
     @staticmethod
-    def divide_grades(member_id, grade_ids=''):
-        grades = []
-        if grade_ids is not None and grade_ids != '':
-            grade_id_list = grade_ids.split(',')
-            # 检查需要绑定的grade是否存在
-            for grade_id in grade_id_list:
-                grade = Grade.query.get_or_404(ident=grade_id, msg='{grade_id}不存在'.format(grade_id=grade_id))
-                grades.append(grade)
+    def bind_grades(member_id, bind_grades):
         with db.auto_commit():
-            member = Members.query.get_or_404(member_id)
-            member.grades = grades
-            db.session.add(member)
+            member = Members.query.get_or_404(ident=member_id)
+            grades = member.grades
+            grade_ids = [g.id for g in grades]
+            # 检查需要绑定的grade是否存在
+            for bind_grade in bind_grades:
+                if bind_grade not in grade_ids:
+                    member.grades.append(bind_grade)
+            return member
+
+    @staticmethod
+    def un_bind_grades(member_id, remove_grade_ids):
+        with db.auto_commit():
+            member = Members.query.get_or_404(ident=member_id)
+            result_grades = []
+            member.grades = [grade for grade in member.grades if grade.id not in remove_grade_ids]
+            member.grades = result_grades
             return member
 
     @staticmethod
     def update_member(uid, name, gender, age, mobile='', nickname='', grades=[]):
         with db.auto_commit():
-            member = Members.query.get_or_404(uid, msg='member not found')
+            member = Members.query.get_or_404(ident=uid, msg='member not found')
             member.name = name
             member.gender = gender
             member.age = age
@@ -106,9 +112,14 @@ class Members(Base):
     def to_dict(self):
         result_dict = {}
         for column_name in self.fields:
-            value = getattr(self, column_name, None)
-            if column_name == 'grades':
-                result_dict['grades'] = [v.to_dict() for v in value]
-            else:
-                result_dict[column_name] = value
+            result_dict[column_name] = getattr(self, column_name, None)
+
+        result_dict['grades'] = [{
+            'id': grade.id,
+            'week': grade.week,
+            'start_time': grade.start_time.strftime('%H:%M:%S'),
+            'end_time': grade.end_time.strftime('%H:%M:%S'),
+            'grade_name': grade.grade_name
+        } for grade in self.grades]
+
         return result_dict

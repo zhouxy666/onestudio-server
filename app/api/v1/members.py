@@ -1,10 +1,9 @@
-from flask import request, jsonify
 from app.libs.redprint import Redprint
 from app.libs.token_auth import auth
 from app.models.base import db
 from app.models.members import Members, Grade
 from app.libs.error_code import Success, CreateSuccess, DeleteSuccess
-from app.validators.forms import MemberForm, DivideGradesForm
+from app.validators.member_form import MemberForm, BindGrades
 from flask import request
 
 api = Redprint('members')
@@ -74,8 +73,7 @@ def update_member(uid):
         member.age = form.age.data
         member.mobile = form.mobile.data
         member.nickname = form.nickname.data
-        member.grades = form.grades
-    return Success()
+    return Success(data=member.to_dict())
 
 
 @api.route('/<int:uid>', methods=['delete'])
@@ -95,9 +93,15 @@ def delete_member(uid):
 '''
 
 
-@api.route('/divide_grades', methods=['post'])
-def bind_grades():
-    form = DivideGradesForm().validate_for_api()
-    members = Members.divide_grades(form.member_id.data, form.grade_ids.data)
-    print(members)
-    return Success()
+@api.route('/bind_grades/<int:uid>', methods=['post'])
+def bind_grades(uid):
+    form = BindGrades().validate_for_api()
+    member = Members.bind_grades(uid, form.grades)
+    return Success(data=member.to_dict())
+
+
+@api.route('/un_bind_grades/<int:uid>', methods=['post'])
+def un_bind_grades(uid):
+    form = BindGrades().validate_for_api()
+    member = Members.un_bind_grades(uid, form.grade_ids.data)
+    return Success(data=member.to_dict())

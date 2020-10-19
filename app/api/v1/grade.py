@@ -2,7 +2,7 @@ from wtforms.validators import ValidationError
 from app.libs.redprint import Redprint
 from app.models.grade import Grade
 from app.libs.error_code import Success, DeleteSuccess, ParameterException, UpdateSuccess
-from app.validators.forms import GradeForm, UpdateGradeForm
+from app.validators.grade_form import GradeForm, UpdateGradeForm, BindMembers
 from sqlalchemy import or_, and_, Time
 from flask import request, jsonify
 from app.models.base import db
@@ -67,20 +67,9 @@ def add_grade():
 
 @api.route('/<int:grade_id>', methods=['put'])
 def update_grade(grade_id):
-    data = request.get_json(silent=True) or request.form.to_dict()
-
-    # 检查当前修改的班级是否存在
-    grade = Grade.query.get_or_404(ident=grade_id, msg="%s班级不存在" % grade_id)
-
-    # 校验班级的名称，不能重复
-    valid_name = Grade.query.filter(Grade.grade_name == data['grade_name'],
-                                    Grade.status == 1,
-                                    Grade.id != grade_id).first()
-    if valid_name is not None:
-        raise ParameterException(msg='{} 班级名已存在'.format(data['grade_name']))
-
     # 使用校验器校验剩余的参数
-    form = UpdateGradeForm().validate_for_api()
+    form = UpdateGradeForm(grade_id).validate_for_api()
+    grade = form.grade
     '''
     查询设置的时间段是否已经有课程
     '''
@@ -120,3 +109,17 @@ def delete_grade(uid):
         # 删除会员
         grade.delete()
     return DeleteSuccess()
+
+
+@api.route('/bind_members/<int:gid>', methods=['post'])
+def bind_members(gid):
+    form = BindMembers().validate_for_api()
+    grad = Grade.bind_members(gid, form.members)
+    return Success(data=grad.to_dict())
+
+
+@api.route('/un_bind_members/<int:gid>', methods=['post'])
+def un_bind_members(gid):
+    form = BindMembers().validate_for_api()
+    grad = Grade.un_bind_members(gid, form.members)
+    return Success(data=grad.to_dict())
