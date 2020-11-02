@@ -20,7 +20,7 @@ class CreateSuccess(Success):
 
 class UpdateSuccess(Success):
     code = 203
-    error_code = 203
+    error_code = 0
 
 
 # 参数错误

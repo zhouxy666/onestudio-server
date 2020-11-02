@@ -25,7 +25,7 @@ class GradeForm(BaseForm):
 
     def validate_week(self, value):
         try:
-            ["0", "1", "2", "3", "4", "5", "6"].index(value.data)
+            ["1", "2", "3", "4", "5", "6", "7"].index(value.data)
         except ValueError as e:
             raise e
 
@@ -75,6 +75,8 @@ class UpdateGradeForm(GradeForm):
                                             Grade.id != self.grade_id).first()
             if valid_name is not None:
                 raise ValidationError(msg='{} 班级名已存在'.format(value.data))
+        else:
+            value.data = self.grade.grade_name
 
     def validate_week(self, value):
         if value.data in [None, '']:
@@ -96,4 +98,4 @@ class BindMembers(BaseForm):
 
     def validate_member_ids(self, value):
         self.members = self.validate_str_ids(Members, value.data)
-        value.data = [member.id for member in self.members]
+        value.data = [int(member.id) for member in self.members]

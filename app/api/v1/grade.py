@@ -44,8 +44,8 @@ def add_grade():
     res_grade = Grade.query.filter(
         and_(Grade.week == form.week.data,
              or_(
-                 and_(form.start_time.data >= Grade.start_time, form.start_time.data <= Grade.end_time),
-                 and_(form.end_time.data >= Grade.start_time, form.end_time.data <= Grade.end_time)
+                 and_(form.start_time.data > Grade.start_time, form.start_time.data < Grade.end_time),
+                 and_(form.end_time.data > Grade.start_time, form.end_time.data < Grade.end_time)
              ),
              Grade.status == 1
              )) \
@@ -76,8 +76,8 @@ def update_grade(grade_id):
     res_grade = Grade.query.filter(
         and_(Grade.week == form.week.data,
              or_(
-                 and_(form.start_time.data >= Grade.start_time, form.start_time.data <= Grade.end_time),
-                 and_(form.end_time.data >= Grade.start_time, form.end_time.data <= Grade.end_time)
+                 and_(form.start_time.data > Grade.start_time, form.start_time.data < Grade.end_time),
+                 and_(form.end_time.data > Grade.start_time, form.end_time.data < Grade.end_time)
              ),
              Grade.id != grade_id,
              Grade.status == 1
@@ -95,7 +95,6 @@ def update_grade(grade_id):
         grade.week = form.week.data
         grade.start_time = form.start_time.data
         grade.end_time = form.end_time.data
-        grade.members = form.members
 
     return UpdateSuccess()
 

@@ -46,4 +46,4 @@ class BindGrades(BaseForm):
 
     def validate_grade_ids(self, value):
         self.grades = self.validate_str_ids(Grade, value.data)
-        value.data = [grade.id for grade in self.grades]
+        value.data = [int(grade.id) for grade in self.grades]
