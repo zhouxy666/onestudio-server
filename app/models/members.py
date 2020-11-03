@@ -30,13 +30,14 @@ class Members(Base):
     auth = Column(SmallInteger, default=4)
     # 年龄
     age = Column(String(24), nullable=True, default=1)
-
+    # 生日
+    birthday = Column(Date, nullable=True)
     # 定义多对多的关系
     grades = db.relationship("Grade", secondary=members_grade, backref=db.backref('members'))
 
     @orm.reconstructor
     def __init__(self):
-        self.fields = ['id', 'openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age',
+        self.fields = ['id', 'openid', 'name', 'gender', 'avatarurl', 'mobile', 'nickname', 'auth', 'age', 'birthday',
                        'create_time']
         super(Members, self).__init__()
 
@@ -90,9 +91,7 @@ class Members(Base):
     def un_bind_grades(member_id, remove_grade_ids):
         with db.auto_commit():
             member = Members.query.get_or_404(ident=member_id)
-            result_grades = []
             member.grades = [grade for grade in member.grades if grade.id not in remove_grade_ids]
-            member.grades = result_grades
             return member
 
     @staticmethod

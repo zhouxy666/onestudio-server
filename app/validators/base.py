@@ -23,7 +23,7 @@ class BaseForm(Form):
     def validate_str_ids(model, ids):
         if ids in [None, '']:
             return []
-        split_ids = ids.split(',')
+        split_ids = str(ids).split(',')
         instance_list = []
         for ins_id in split_ids:
             model_ins = model.query.get_or_404(ident=ins_id, msg='{}不存在'.format(ins_id))

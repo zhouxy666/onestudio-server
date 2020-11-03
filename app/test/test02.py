@@ -4,6 +4,12 @@ def a():
     pass
 
 
+def b():
+    abc = 1
+    print('1' in ['1', 2])
+    pass
+
+
 if __name__ == '__main__':
-    a()
+    b()
     pass
