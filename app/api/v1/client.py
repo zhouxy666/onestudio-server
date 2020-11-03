@@ -22,8 +22,8 @@ def create_client():
 def __register_user_by_email():
     form = UserEmailForm().validate_for_api()
     User.register_by_email(form.nickname.data,
-                           form.account.data,
-                           form.secret.data)
+                           form.username.data,
+                           form.password.data)
 
 
 def __register_by_wx():

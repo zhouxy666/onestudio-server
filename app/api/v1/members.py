@@ -4,6 +4,7 @@ from app.models.base import db
 from app.models.members import Members, Grade
 from app.libs.error_code import Success, CreateSuccess, DeleteSuccess
 from app.validators.member_form import MemberForm, BindGrades
+from sqlalchemy import or_, and_, Time
 from flask import request
 
 api = Redprint('members')
@@ -38,12 +39,25 @@ def get_member(member_id):
 @api.route('/search', methods=['get'])
 @auth.login_required
 def search_member():
-    name = request.args.get('name') or ''
-    members = Members.query.filter(Members.name.like('%' + name + '%'), Members.status == 1).all()
-    res_members = [v.to_dict() for v in members]
-    if len(members) == 0:
-        return Success(data=res_members, msg='member is not found')
-    return Success(data=res_members)
+    # name = request.args.get('name') or ''
+    params = request.args.to_dict()
+    name = params.get('name') or ''
+    limit = params.get('limit')
+    page = params.get('page')
+    members = []
+    count = 0
+    if limit is None or page is None:
+        members = Members.query.filter(Members.name.like('%' + name + '%'), Members.status == 1).all()
+        count = len(members)
+    else:
+        paginate = Members.query.filter(and_(
+            or_(Members.name.like('%' + name + '%'), Members.nickname.like('%' + name + '%')),
+            Members.status == 1)) \
+            .paginate(int(page), int(limit))
+        members = paginate.items
+        count = paginate.total
+
+    return Success(data=[item.to_dict() for item in members], count=count)
 
 
 @api.route('', methods=['POST'])
