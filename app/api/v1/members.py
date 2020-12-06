@@ -20,7 +20,6 @@ def get_members():
     count = 0
     if limit is None or page is None:
         members = Members.query.filter_by().order_by(Members.create_time.desc()).all()
-        print(members)
         count = Members.query.filter_by().count()
     else:
         paginate = Members.query.filter_by().order_by(Members.create_time.desc()).paginate(int(page), int(limit))

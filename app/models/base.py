@@ -47,7 +47,7 @@ class Base(db.Model):
     status = Column(SmallInteger, default=1)
 
     def __init__(self):
-        self.create_time = int(datetime.now().timestamp())
+        self.create_time = self.create_time or int(datetime.now().timestamp())
 
     def __getitem__(self, item):
         return getattr(self, item)
