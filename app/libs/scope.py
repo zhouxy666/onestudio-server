@@ -35,8 +35,8 @@ class AuthScope(AuthBase):
         return self.check_auth(modules=modules)
 
     def admin(self):
-        endpoints = ['v1.members', 'v1.grade', 'v1.attendance']
-        return self.check_auth(endpoints=endpoints)
+        modules = ['v1.members', 'v1.grade', 'v1.attendance']
+        return self.check_auth(modules=modules)
 
     def user(self):
         endpoints = []
