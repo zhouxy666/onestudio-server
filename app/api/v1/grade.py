@@ -1,4 +1,4 @@
-from wtforms.validators import ValidationError
+from app.libs.token_auth import auth
 from app.libs.redprint import Redprint
 from app.models.grade import Grade
 from app.libs.error_code import Success, DeleteSuccess, ParameterException, UpdateSuccess
@@ -11,6 +11,7 @@ api = Redprint('grade')
 
 
 @api.route('', methods=['get'])
+@auth.login_required
 def get_grades():
     params = request.args.to_dict()
     limit = params.get('limit')
@@ -30,12 +31,14 @@ def get_grades():
 
 
 @api.route('/<int:uid>', methods=['get'])
+@auth.login_required
 def get_grade(uid):
     grade = Grade.query.get_or_404(ident=uid, msg="没有找到这个班级")
     return Success(data=grade.to_dict())
 
 
 @api.route('', methods=['post'])
+@auth.login_required
 def add_grade():
     form = GradeForm().validate_for_api()
     '''
@@ -66,6 +69,7 @@ def add_grade():
 
 
 @api.route('/<int:grade_id>', methods=['put'])
+@auth.login_required
 def update_grade(grade_id):
     # 使用校验器校验剩余的参数
     form = UpdateGradeForm(grade_id).validate_for_api()
@@ -100,6 +104,7 @@ def update_grade(grade_id):
 
 
 @api.route('/<int:uid>', methods=['delete'])
+@auth.login_required
 def delete_grade(uid):
     with db.auto_commit():
         grade = Grade.query.get_or_404(ident=uid, msg='没有找到该会员')
@@ -111,6 +116,7 @@ def delete_grade(uid):
 
 
 @api.route('/bind_members/<int:gid>', methods=['post'])
+@auth.login_required
 def bind_members(gid):
     form = BindMembers().validate_for_api()
     grad = Grade.bind_members(gid, form.members)
@@ -118,6 +124,7 @@ def bind_members(gid):
 
 
 @api.route('/un_bind_members/<int:gid>', methods=['post'])
+@auth.login_required
 def un_bind_members(gid):
     form = BindMembers().validate_for_api()
     grad = Grade.un_bind_members(gid, form.members)

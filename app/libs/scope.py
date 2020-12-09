@@ -35,14 +35,11 @@ class AuthScope(AuthBase):
         return self.check_auth(modules=modules)
 
     def admin(self):
-        modules = ['v1.user', 'v1.members', 'v1.grade', 'v1.attendance']
-        return self.check_auth(modules=modules)
+        endpoints = ['v1.user+get_user']
+        return self.check_auth(endpoints=endpoints)
 
     def user(self):
-        endpoints = ['v1.user+get_user',
-                     'v1.user+delete_user',
-                     'v1.user+update_user',
-                     'v1.user+create_user']
+        endpoints = ['v1.user+get_user']
         return self.check_auth(endpoints=endpoints)
 
     def wx_user(self):
