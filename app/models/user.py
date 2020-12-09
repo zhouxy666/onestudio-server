@@ -8,7 +8,8 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String(24), unique=True, nullable=False)
     nickname = Column(String(24))
-    auth = Column(SmallInteger, default=1)
+    # 默认注册的都是普通用户
+    auth = Column(SmallInteger, default=3)
     _password = Column('password', String(100))
 
     @orm.reconstructor
