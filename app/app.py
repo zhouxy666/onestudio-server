@@ -15,9 +15,16 @@ def register_plugin(app):
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('app.config.db')
-    app.config.from_object('app.config.setting')
-    app.config.from_object('app.config.secure')
+    print('... ENV ...', app.config['ENV'])
+
+    if app.config['ENV'] == 'development':
+        app.config.from_object('app.config.dev.db')
+        app.config.from_object('app.config.dev.setting')
+        app.config.from_object('app.config.dev.secure')
+    else:
+        app.config.from_object('app.config.prod.db')
+        app.config.from_object('app.config.prod.setting')
+        app.config.from_object('app.config.prod.secure')
 
     # 注册蓝图
     register_blueprints(app)
