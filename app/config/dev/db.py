@@ -3,10 +3,11 @@ MYSQL_CONFIG = {
     'dialect': 'mysql',
     'driver': 'pymysql',
     'username': 'root',
-    'password': '123456',
-    'host': '106.53.240.98',
+    'password': '1234',
+    'host': 'localhost',
     'port': '3306',
-    'database': 'onestudio'
+    'database': 'onestudio_dev',
+    # 'database': 'onestudio_test',
 }
 
 SQLALCHEMY_DATABASE_URI = '{dialect}+{driver}://{username}:{password}@{host}:{port}/{database}?charset=utf8'.format(
